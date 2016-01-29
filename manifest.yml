@@ -1,0 +1,9 @@
+---
+applications:
+- name: parse-server4pws
+  memory: 128M
+  instances: 1
+  buildpack: nodejs_buildpack
+  command: node index.js
+  host: parse-server-${random-word}
+
