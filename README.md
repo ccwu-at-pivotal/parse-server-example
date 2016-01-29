@@ -1,4 +1,4 @@
-# parse-server-example
+# parse-server-example for PWS (http://run.pivotal.io)
 
 Example project using the parse-server module on Express.
 
@@ -16,15 +16,15 @@ Read the full server guide here: https://parse.com/docs/server/guide
 * You now have a database named "dev" that contains your Parse data
 * Install ngrok and you can test with devices
 
-### Getting Started With Heroku + Mongolab Development
+### Getting Started With Pivotal Web Services + Mongolab Development
 
 * Clone the repo and change directory to it
-* Use the Heroku Toolbelt to log in and prepare the app
-* Use the MongoLab addon: `heroku addons:create mongolab:sandbox`
-* Use `heroku config` and note the URI provided by MongoLab under the var MONGOLAB_URI 
-* Copy this URI and set it as a new config variable: `heroku config:set DATABASE_URI=mongodb://...`
-* By default it will use a path of /parse for the API routes.  To change this, or use older client SDKs, run `heroku config:set PARSE_MOUNT=/1`
-* Deploy it with: `git push heroku master`
+* Use the Cloud Foundry CLI to log in and prepare the app. Don't have an account try using Pivotal Web Services (http://run.pivotal.io)
+* Use the MongoLab service via the cf CLI: `cf create-service mongolab sandbox parse-mongo`
+* Deploy the application to Cloud Foundry `cf push` // the manifest will define key parameters and request a random-route, note that it will fail since it can't find the Mongo instance. Next step.
+* Bind the application to the monogo service `cf bind-service parse-server4pws parse-mongo`
+* By default it will use a path of /parse for the API routes.  To change this, or use older client SDKs, run `cf set-env parse-server4pws PARSE_MOUNT /1`
+* Restart your application to take the URI it with: `cf restage parse-server4pws` and your server is up and running.
 
 ### Using it
 
@@ -46,6 +46,7 @@ curl -X POST \
   http://localhost:1337/parse/functions/hello
 ```
 
+To use it remotely. Substitute the route provided when you run the command `cf app parse-server`
 Example using it via JavaScript:
 
 ```

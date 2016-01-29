@@ -1,16 +1,35 @@
 // Example express application adding the parse-server module to expose Parse
-// compatible API routes.
+// compatible API routes. This is a fork of the code at
+// https://github.com/ParsePlatform/parse-server-example
+//
+// note this is an example and not kept in sync with upstream.
 
 var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
 var http = require('http');
 
-if (!process.env.DATABASE_URI) {
-  console.log('DATABASE_URI not specified, falling back to localhost.');
+// For Pivotal Cloud Foundry Deploy, get MongoDB URI
+// This is different from the heroku method of a flat 
+// environment variable space to provide greater
+// flexibility and more of the same service if needed
+// Details about VCAP_services can be found at:
+//
+// https://docs.run.pivotal.io/devguide/deploy-apps/environment-variable.html#VCAP-SERVICES
+//
+// This app assumes that you have created a Monglab Mongo DB instance using
+//
+// `cf create-service mongolab sandbox parse-mongo`
+// `cf bind-service <APPNAME> parse-mongo`
+// `cf restage <APPNAME>`
+
+var vcap_services = JSON.parse(process.env.VCAP_SERVICES);
+
+if (!process.env.VCAP_SERVICES) {
+  console.log('DATABASE_URI not specified via VCAP_SERVICES, falling back to localhost.');
 }
 
 var api = new ParseServer({
-  databaseURI: process.env.DATABASE_URI || 'mongodb://localhost:27017/dev',
+  databaseURI: vcap_services.mongolab[0].credentials.uri || 'mongodb://localhost:27017/dev',
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
   appId: 'myAppId',
   masterKey: 'myMasterKey'
